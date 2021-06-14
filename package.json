@@ -2,11 +2,11 @@
   "name": "vue-virtual-table",
   "version": "0.2.19",
   "description": "vue table component with virtual dom",
-  "author": "https://github.com/waningflow",
+  "author": "https://github.com/Brisstor",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/waningflow/vue-virtual-table.git"
+    "url": "https://github.com/Brisstor/vue-virtual-table"
   },
   "keywords": [
     "vue",
