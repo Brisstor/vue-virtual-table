@@ -67,7 +67,6 @@ const get = (object, path) => {
 };
 
 export const sort = (array, prop, desc = true) => {
-  console.log(array);
   if (!prop) throw new Error('Specify prop for objects to be sorted by');
   return array.sort((curr, next) => {
     curr = get(curr, prop);
