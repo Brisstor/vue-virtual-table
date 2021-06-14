@@ -1,6 +1,6 @@
 {
   "name": "brisstor-vue-virtual-table",
-  "version": "0.2.22",
+  "version": "0.2.25",
   "description": "vue table component with virtual dom",
   "author": "https://github.com/Brisstor",
   "license": "MIT",
