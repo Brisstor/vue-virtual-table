@@ -58,3 +58,25 @@ export function debounce(fun, t = 0) {
     }, t)
   }
 }
+
+const get = (object, path) => {
+  const keys = path.split('.');
+  const currentKey = keys.shift();
+  if (!keys.length) return object[currentKey];
+  return get(object[currentKey], keys.join('.'));
+};
+
+export const sort = (array, prop, desc = true) => {
+  console.log(array);
+  if (!prop) throw new Error('Specify prop for objects to be sorted by');
+  return array.sort((curr, next) => {
+    curr = get(curr, prop);
+    next = get(next, prop);
+    if (typeof curr === 'string') curr = curr.toLowerCase();
+    if (typeof next === 'string') next = next.toLowerCase();
+
+    if (curr > next) return desc ? -1 : 1;
+    if (curr < next) return desc ? 1 : -1;
+    return 0;
+  });
+};

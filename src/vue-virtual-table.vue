@@ -293,19 +293,19 @@
                 >
                   <i
                     class="sort-ascending"
-                    @click="handleClickSort(item.prop, 'asc')"
+                    @click="handleClickSort(item.sortProp || item.prop, 'asc')"
                     :class="{
                       selected:
-                        sortParam.col === item.prop &&
+                        (sortParam.col === item.sortProp || sortParam.col === item.prop) &&
                         sortParam.direction === 'asc'
                     }"
                   ></i>
                   <i
                     class="sort-descending"
-                    @click="handleClickSort(item.prop, 'desc')"
+                    @click="handleClickSort(item.sortProp || item.prop, 'desc')"
                     :class="{
                       selected:
-                        sortParam.col === item.prop &&
+                        (sortParam.col === item.sortProp || sortParam.col === item.prop) &&
                         sortParam.direction === 'desc'
                     }"
                   ></i>
@@ -588,7 +588,7 @@ import BaseCheckgroup from "./components/base-checkgroup.vue";
 import BaseTooltip from "./components/base-tooltip.vue";
 import BaseIcon from "./components/base-icon.vue";
 import "vue-resize/dist/vue-resize.css";
-import { _uuid, exportCsv, deepCopy, debounce } from "./utils/index.js";
+import { _uuid, exportCsv, deepCopy, debounce, sort } from "./utils";
 import { VPopover } from "v-tooltip";
 
 export default {
@@ -1228,68 +1228,75 @@ export default {
       this.handleClickConfirmFilter(index);
     },
     handleChangeFilter(val) {},
-    handleClickSort(val, direction, forse) {
-      let self = this;
-      if (
-        self.sortParam.col === val &&
-        self.sortParam.direction === direction &&
-        !forse
-      ) {
-        return;
-      }
-      if (!self.dataTemp[0] || !val) {
-        return;
-      }
-      self.sortParam.col = val;
-      self.sortParam.direction = direction;
-      let isNumber = false;
-      self.dataTemp.some((v, i) => {
-        if (!self.getDescendantProp(v, val) && self.getDescendantProp(v, val) != 0) {
-          return false;
-        }
-        if (isNaN(self.getDescendantProp(v, val)) && self.getDescendantProp(v, val) != "NaN") {
-          isNumber = false;
-          return true;
-        } else {
-          isNumber = true;
-          return true;
-        }
-      });
-      if (direction === "asc") {
-        if (!isNumber) {
-          // let a_cp = a[val]||'', b_cp = b[val]||''
-          self.dataTemp.sort((a, b) =>
-            (self.getDescendantProp(a, val) || "").localeCompare(self.getDescendantProp(b, val) || "")
-          );
-        } else {
-          self.dataTemp.sort((a, b) => {
-            if (isNaN(self.getDescendantProp(a, val))) {
-              return -self.getDescendantProp(b, val) < 0 ? -1 : 1;
-            }
-            if (isNaN(self.getDescendantProp(b, val))) {
-              return self.getDescendantProp(a, val) < 0 ? -1 : 1;
-            }
-            return self.getDescendantProp(a, val) - self.getDescendantProp(b, val) < 0 ? -1 : 1;
-          });
-        }
-      } else {
-        if (!isNumber) {
-          // let a_cp = a[val]||'', b_cp = b[val]||''
-          self.dataTemp.sort(
-            (a, b) => -(self.getDescendantProp(a, val) || "").localeCompare(self.getDescendantProp(b, val) || "")
-          );
-        } else {
-          self.dataTemp.sort((a, b) => {
-            if (isNaN(self.getDescendantProp(a, val))) {
-              return -self.getDescendantProp(b, val) > 0 ? -1 : 1;
-            }
-            if (isNaN(self.getDescendantProp(b, val))) {
-              return self.getDescendantProp(a, val) > 0 ? -1 : 1;
-            }
-            return self.getDescendantProp(a, val) - self.getDescendantProp(b, val) > 0 ? -1 : 1;
-          });
-        }
-      }
+    handleClickSort(sortField, direction, forse) {
+      sort(this.dataTemp, sortField, direction === 'desc');
+      this.sortParam.col = sortField;
+      this.sortParam.direction = direction;
+      // let self = this;
+      // if (
+      //   self.sortParam.col === sortField &&
+      //   self.sortParam.direction === direction &&
+      //   !forse
+      // ) {
+      //   return;
+      // }
+      // if (!self.dataTemp[0] || !sortField) {
+      //   return;
+      // }
+      // self.sortParam.col = sortField;
+      // self.sortParam.direction = direction;
+      // let isNumber = false;
+      // self.dataTemp.some((v, i) => {
+      //   if (!self.getDescendantProp(v, sortField) && self.getDescendantProp(v, sortField) != 0) {
+      //     console.log(1);
+      //     return false;
+      //   }
+      //   console.log(v, v.username, sortField);
+      //   if (isNaN(self.getDescendantProp(v, sortField)) && self.getDescendantProp(v, sortField) != "NaN") {
+      //     console.log(2);
+      //     isNumber = false;
+      //     return true;
+      //   } else {
+      //     console.log(3);
+      //     isNumber = true;
+      //     return true;
+      //   }
+      // });
+      // if (direction === "asc") {
+      //   if (!isNumber) {
+      //     // let a_cp = a[val]||'', b_cp = b[val]||''
+      //     self.dataTemp.sort((a, b) =>
+      //       (self.getDescendantProp(a, sortField) || "").localeCompare(self.getDescendantProp(b, sortField) || "")
+      //     );
+      //   } else {
+      //     self.dataTemp.sort((a, b) => {
+      //       if (isNaN(self.getDescendantProp(a, sortField))) {
+      //         return -self.getDescendantProp(b, sortField) < 0 ? -1 : 1;
+      //       }
+      //       if (isNaN(self.getDescendantProp(b, sortField))) {
+      //         return self.getDescendantProp(a, sortField) < 0 ? -1 : 1;
+      //       }
+      //       return self.getDescendantProp(a, sortField) - self.getDescendantProp(b, sortField) < 0 ? -1 : 1;
+      //     });
+      //   }
+      // } else {
+      //   if (!isNumber) {
+      //     // let a_cp = a[val]||'', b_cp = b[val]||''
+      //     self.dataTemp.sort(
+      //       (a, b) => -(self.getDescendantProp(a, sortField) || "").localeCompare(self.getDescendantProp(b, sortField) || "")
+      //     );
+      //   } else {
+      //     self.dataTemp.sort((a, b) => {
+      //       if (isNaN(self.getDescendantProp(a, sortField))) {
+      //         return -self.getDescendantProp(b, sortField) > 0 ? -1 : 1;
+      //       }
+      //       if (isNaN(self.getDescendantProp(b, sortField))) {
+      //         return self.getDescendantProp(a, sortField) > 0 ? -1 : 1;
+      //       }
+      //       return self.getDescendantProp(a, sortField) - self.getDescendantProp(b, sortField) > 0 ? -1 : 1;
+      //     });
+      //   }
+      // }
     },
     handleClickAction(eve) {
       eve.stopPropagation();
